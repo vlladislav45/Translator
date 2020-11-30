@@ -304,27 +304,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 wcscpy_s(out, en_text);
                 wcscat_s(out, L" - ");
                 wcscat_s(out, bg_text);
-
-                //get current selected item from list box and update it
-                wchar_t selectedItem[255];
-                int i = SendMessage(hDictionary, LB_GETCURSEL, 0, 0);
-                SendMessage(hDictionary, LB_GETTEXT, i, (LPARAM)selectedItem);
-
-                //Convert from wchar_t to wstring
-                wstring s(selectedItem);
-                //Convert from wstring to string
-                string str(s.begin(), s.end());
-                //Split by dash('-')
-                string key = str.substr(0, str.find(" - "));
-                map<string, string>::iterator it = translations.find(key);
-                translations.erase(it); // delete from our map with translations
-                //Delete from a file
-                ReadWriteFromFile wf = ReadWriteFromFile(FILE);
-                wf.deleteWord(key, FILE);
-                // Delete an element from the listbox
-                SendMessage(hDictionary, LB_DELETESTRING, i, (LPARAM)selectedItem);
              
-                if (HWNDToString(en_dictionaryWord).length() > 0 || HWNDToString(bg_dictionaryWord).length() > 0) {
+                if (HWNDToString(en_dictionaryWord).length() > 0 && HWNDToString(bg_dictionaryWord).length() > 0) {
+                    //get current selected item from list box and update it
+                    wchar_t selectedItem[255];
+                    int i = SendMessage(hDictionary, LB_GETCURSEL, 0, 0); // -1 unselected item
+                    if (i == -1) {
+                        MessageBox(hWnd, L"You have to select an item", L"Warning", NULL);
+                        return 0;
+                    }
+                    SendMessage(hDictionary, LB_GETTEXT, i, (LPARAM)selectedItem);
+
+                    //Convert from wchar_t to wstring
+                    wstring s(selectedItem);
+                    //Convert from wstring to string
+                    string str(s.begin(), s.end());
+                    //Split by dash('-')
+                    string key = str.substr(0, str.find(" - "));
+                    map<string, string>::iterator it = translations.find(key);
+                    translations.erase(it); // delete from our map with translations
+
+                    //Delete from a file
+                    ReadWriteFromFile wf = ReadWriteFromFile(FILE);
+                    wf.deleteWord(key, FILE);
+                    // Delete an element from the listbox
+                    SendMessage(hDictionary, LB_DELETESTRING, i, (LPARAM)selectedItem);
+
                     //Add to translations map
                     translations.insert(pair<string, string>(HWNDToString(en_dictionaryWord), HWNDToString(bg_dictionaryWord)));
                     //Add to file
@@ -332,6 +337,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     //Add the element in the listbox
                     SendMessage(hDictionary, LB_ADDSTRING, 0, (LPARAM)out);
                 }
+                else MessageBox(hWnd, L"You have to enter english and bulgarian word", L"Warning", NULL);
             }break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
