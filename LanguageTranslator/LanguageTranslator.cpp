@@ -192,9 +192,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
          
                 GetWindowTextW(bg_dictionaryWord, bg_text, 50);
                 GetWindowTextW(en_dictionaryWord, en_text, 50);
-                wcscpy(out, en_text);
-                wcscat(out, L" - ");
-                wcscat(out, bg_text);
+                wcscpy_s(out, en_text);
+                wcscat_s(out, L" - ");
+                wcscat_s(out, bg_text);
 
                 for (auto const& translatedWord : translations) { //Foreach
                     if (translatedWord.first == HWNDToString(en_dictionaryWord)) {
@@ -301,9 +301,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 GetWindowTextW(bg_dictionaryWord, bg_text, 50);
                 GetWindowTextW(en_dictionaryWord, en_text, 50);
 
-                wcscpy(out, en_text);
-                wcscat(out, L" - ");
-                wcscat(out, bg_text);
+                wcscpy_s(out, en_text);
+                wcscat_s(out, L" - ");
+                wcscat_s(out, bg_text);
 
                 //get current selected item from list box and update it
                 wchar_t selectedItem[255];
